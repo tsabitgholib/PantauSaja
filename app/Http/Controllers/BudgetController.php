@@ -14,11 +14,11 @@ class BudgetController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $now = Carbon::now();
-        $startOfMonth = $now->copy()->startOfMonth();
-        $endOfMonth = $now->copy()->endOfMonth();
+        $month = $request->month ? Carbon::parse($request->month) : Carbon::now();
+        $startOfMonth = $month->copy()->startOfMonth();
+        $endOfMonth = $month->copy()->endOfMonth();
 
         $budgets = Auth::user()->budgets()
             ->where('period', $startOfMonth->format('Y-m-d'))
@@ -41,7 +41,11 @@ class BudgetController extends Controller
                 $q->whereNull('user_id')->orWhere('user_id', Auth::id());
             })->get();
 
-        return view('budgets.index', compact('budgets', 'categories'));
+        $currentMonth = $startOfMonth->format('Y-m');
+        $prevMonth = $startOfMonth->copy()->subMonth()->format('Y-m');
+        $nextMonth = $startOfMonth->copy()->addMonth()->format('Y-m');
+
+        return view('budgets.index', compact('budgets', 'categories', 'currentMonth', 'prevMonth', 'nextMonth'));
     }
 
     /**
@@ -52,16 +56,17 @@ class BudgetController extends Controller
         $request->validate([
             'category_id' => 'required|exists:categories,id',
             'amount' => 'required|numeric|min:0',
+            'month' => 'nullable|date_format:Y-m',
         ]);
 
-        $period = Carbon::now()->startOfMonth()->format('Y-m-d');
+        $period = ($request->month ? Carbon::parse($request->month) : Carbon::now())->startOfMonth()->format('Y-m-d');
 
         Auth::user()->budgets()->updateOrCreate(
             ['category_id' => $request->category_id, 'period' => $period],
             ['amount' => $request->amount]
         );
 
-        return redirect()->route('budgets.index')->with('success', 'Budget berhasil disimpan.');
+        return redirect()->route('budgets.index', ['month' => $request->month])->with('success', 'Budget berhasil disimpan.');
     }
 
     /**

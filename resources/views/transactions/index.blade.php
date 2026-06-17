@@ -76,8 +76,8 @@
                         </div>
                     </div>
                     <div class="text-end">
-                        <p class="fw-black mb-0 {{ $transaction->type === 'income' ? 'text-success' : 'text-danger' }}" style="font-size: 14px;">
-                            {{ $transaction->type === 'income' ? '+' : '-' }}Rp{{ number_format($transaction->amount, 0, ',', '.') }}
+                        <p class="fw-black mb-0 {{ $transaction->type === 'income' ? 'text-success' : ($transaction->type === 'expense' ? 'text-danger' : 'text-primary') }}" style="font-size: 14px;">
+                            {{ $transaction->type === 'income' ? '+' : ($transaction->type === 'expense' ? '-' : '') }}Rp{{ number_format($transaction->amount, 0, ',', '.') }}
                         </p>
                     </div>
                 </div>

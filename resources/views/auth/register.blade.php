@@ -15,8 +15,8 @@
 <body>
     <div class="auth-card">
         <div class="text-center mb-4">
-            <h1 class="fw-bold text-primary"><i class="fas fa-wallet me-2"></i>DompetKu</h1>
-            <p class="text-muted">Mulai Kelola Keuangan Anda</p>
+            <h1 class="fw-bold text-primary"><i class="fas fa-wallet me-2"></i>PantauSaja</h1>
+            <p class="text-muted">Mulai Kelola Keuangan Kamu</p>
         </div>
         <div class="card">
             <div class="card-body p-4">

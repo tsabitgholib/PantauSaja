@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'DompetKu') }}</title>
+    <title>{{ config('app.name', 'PantauSaja') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -260,7 +260,7 @@
             <nav class="col-md-3 col-lg-2 sidebar p-0">
                 <div class="p-4 border-bottom border-4 border-dark">
                     <h3 class="fw-black mb-0">
-                        <i class="fas fa-wallet me-2" style="color: #6366f1;"></i>DompetKu
+                        <i class="fas fa-wallet me-2" style="color: #6366f1;"></i>PantauSaja
                     </h3>
                 </div>
                 <div class="py-3">
@@ -340,7 +340,7 @@
         <div class="p-4 border-bottom border-4 border-dark">
             <div class="d-flex justify-content-between align-items-center">
                 <h3 class="fw-black mb-0">
-                    <i class="fas fa-wallet me-2" style="color: #6366f1;"></i>DompetKu
+                    <i class="fas fa-wallet me-2" style="color: #6366f1;"></i>PantauSaja
                 </h3>
                 <button class="back-btn" id="mobileSidebarClose">
                     <i class="fas fa-times"></i>

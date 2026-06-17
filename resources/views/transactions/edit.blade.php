@@ -92,32 +92,47 @@
 
 @push('scripts')
 <script>
-    $(document).ready(function() {
-        function toggleFields() {
-            const type = $('input[name="type"]:checked').val();
-            
-            if (type === 'transfer') {
-                $('#category_field').hide();
-                $('#to_account_field').show();
-                $('#account_label').text('Dari Akun');
-            } else {
-                $('#to_account_field').hide();
-                $('#category_field').show();
-                $('#account_label').text(type === 'income' ? 'Masuk ke Akun' : 'Sumber Dana');
+    document.addEventListener('DOMContentLoaded', function() {
+        const typeRadios = document.querySelectorAll('input[name="type"]');
+        const categoryField = document.getElementById('category_field');
+        const categorySelect = document.getElementById('category_id');
+        const toAccountField = document.getElementById('to_account_field');
+        const toAccountSelect = document.getElementById('to_account_id');
+        const accountLabel = document.getElementById('account_label');
 
-                $('#category_id option').each(function() {
-                    const catType = $(this).data('type');
-                    if (!catType || catType === type) {
-                        $(this).show();
+        function toggleFields() {
+            const selectedType = document.querySelector('input[name="type"]:checked').value;
+            
+            if (selectedType === 'transfer') {
+                categoryField.style.display = 'none';
+                categorySelect.required = false;
+                toAccountField.style.display = 'block';
+                toAccountSelect.required = true;
+                accountLabel.textContent = 'Dari Akun';
+            } else {
+                toAccountField.style.display = 'none';
+                toAccountSelect.required = false;
+                categoryField.style.display = 'block';
+                categorySelect.required = true;
+                accountLabel.textContent = selectedType === 'income' ? 'Masuk ke Akun' : 'Sumber Dana';
+
+                // Filter categories based on type
+                Array.from(categorySelect.options).forEach(option => {
+                    const catType = option.getAttribute('data-type');
+                    if (!catType || catType === selectedType) {
+                        option.style.display = '';
                     } else {
-                        $(this).hide();
+                        option.style.display = 'none';
                     }
                 });
             }
         }
 
-        $('input[name="type"]').on('change', toggleFields);
-        toggleFields();
+        typeRadios.forEach(radio => {
+            radio.addEventListener('change', toggleFields);
+        });
+
+        toggleFields(); // Initial call
     });
 </script>
 @endpush

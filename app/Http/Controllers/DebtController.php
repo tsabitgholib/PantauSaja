@@ -15,8 +15,9 @@ class DebtController extends Controller
     {
         $debts = Auth::user()->debts()->where('type', 'debt')->orderBy('status')->latest()->get();
         $receivables = Auth::user()->debts()->where('type', 'receivable')->orderBy('status')->latest()->get();
+        $accounts = Auth::user()->accounts;
 
-        return view('debts.index', compact('debts', 'receivables'));
+        return view('debts.index', compact('debts', 'receivables', 'accounts'));
     }
 
     /**
@@ -28,12 +29,26 @@ class DebtController extends Controller
             'person_name' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0',
             'type' => 'required|in:debt,receivable',
+            'account_id' => 'required|exists:accounts,id',
             'due_date' => 'nullable|date',
         ]);
 
-        Auth::user()->debts()->create($request->all());
+        $debt = Auth::user()->debts()->create($request->all());
 
-        return redirect()->route('debts.index')->with('success', 'Catatan berhasil disimpan.');
+        // Create transaction to affect balance
+        $transactionType = ($request->type === 'debt') ? 'income' : 'expense';
+        $note = ($request->type === 'debt') ? "Pinjam dari " : "Memberi pinjaman ke ";
+        $note .= $request->person_name;
+
+        Auth::user()->transactions()->create([
+            'account_id' => $request->account_id,
+            'type' => $transactionType,
+            'amount' => $request->amount,
+            'date' => now(),
+            'note' => $note,
+        ]);
+
+        return redirect()->route('debts.index')->with('success', 'Catatan berhasil disimpan dan saldo akun telah diperbarui.');
     }
 
     /**
@@ -44,9 +59,31 @@ class DebtController extends Controller
         $this->authorizeOwner($debt);
 
         if ($request->has('toggle_status')) {
-            $debt->status = $debt->status === 'paid' ? 'pending' : 'paid';
+            $newStatus = $debt->status === 'paid' ? 'pending' : 'paid';
+            
+            if ($newStatus === 'paid') {
+                $request->validate([
+                    'account_id' => 'required|exists:accounts,id',
+                ]);
+
+                // Create transaction for repayment
+                $transactionType = ($debt->type === 'debt') ? 'expense' : 'income';
+                $note = ($debt->type === 'debt') ? "Bayar utang ke " : "Terima pelunasan piutang dari ";
+                $note .= $debt->person_name;
+
+                Auth::user()->transactions()->create([
+                    'account_id' => $request->account_id,
+                    'type' => $transactionType,
+                    'amount' => $debt->amount,
+                    'date' => now(),
+                    'note' => $note,
+                ]);
+            }
+
+            $debt->status = $newStatus;
             $debt->save();
-            return redirect()->back()->with('success', 'Status berhasil diubah.');
+            
+            return redirect()->back()->with('success', 'Status berhasil diubah dan saldo akun telah diperbarui.');
         }
 
         $request->validate([

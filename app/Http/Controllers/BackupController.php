@@ -14,14 +14,14 @@ class BackupController extends Controller
 
         if ($connection === 'sqlite') {
             $path = config('database.connections.sqlite.database');
-            return Response::download($path, "backup_dompetku_" . date('Y-m-d_H-i-s') . ".sqlite");
+            return Response::download($path, "backup_PantauSaja_" . date('Y-m-d_H-i-s') . ".sqlite");
         }
 
         $tables = DB::select('SHOW TABLES');
         $databaseName = config('database.connections.mysql.database');
         $property = "Tables_in_{$databaseName}";
 
-        $output = "-- DompetKu Database Backup\n";
+        $output = "-- PantauSaja Database Backup\n";
         $output .= "-- Date: " . date('Y-m-d H:i:s') . "\n\n";
 
         foreach ($tables as $table) {
@@ -49,7 +49,7 @@ class BackupController extends Controller
             $output .= "\n\n";
         }
 
-        $filename = "backup_dompetku_" . date('Y-m-d_H-i-s') . ".sql";
+        $filename = "backup_PantauSaja_" . date('Y-m-d_H-i-s') . ".sql";
 
         return Response::make($output, 200, [
             'Content-Type' => 'application/sql',

@@ -8,6 +8,17 @@
     <div class="flex-grow-1">
         <h2 class="fw-bold mb-0">Budgeting Bulanan</h2>
     </div>
+    <div class="d-flex align-items-center gap-2 me-2">
+        <a href="{{ route('budgets.index', ['month' => $prevMonth]) }}" class="back-btn" style="width: 38px; height: 38px;">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <div class="neo-card px-3 py-1 bg-white fw-black" style="border-width: 3px; box-shadow: 4px 4px 0px #0f172a;">
+            {{ \Carbon\Carbon::parse($currentMonth)->format('M Y') }}
+        </div>
+        <a href="{{ route('budgets.index', ['month' => $nextMonth]) }}" class="back-btn" style="width: 38px; height: 38px;">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    </div>
     <button type="button" class="neo-btn neo-btn-primary d-flex align-items-center gap-1" id="openBudgetModalBtn">
         <i class="fas fa-plus"></i>
         <span class="d-none d-md-inline">Tambah</span>
@@ -77,6 +88,7 @@
             </div>
             <form action="{{ route('budgets.store') }}" method="POST" id="budgetForm">
                 @csrf
+                <input type="hidden" name="month" value="{{ $currentMonth }}">
                 <div class="mb-3">
                     <label class="form-label fw-bold">Kategori Pengeluaran</label>
                     <select name="category_id" class="neo-select form-select" required>

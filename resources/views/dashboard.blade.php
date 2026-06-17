@@ -96,11 +96,16 @@
                     @forelse($recentTransactions as $transaction)
                         <div class="d-flex align-items-center justify-content-between py-3 border-bottom border-3 border-dark last:border-0 flex-wrap gap-2">
                             <div class="d-flex align-items-center gap-3">
-                                <div class="border-3 border-dark rounded-2 d-flex align-items-center justify-content-center {{ $transaction->type === 'income' ? 'bg-green-100' : 'bg-red-100' }}" style="width:48px; height:48px; border-radius:12px;">
-                                    <i class="fas fa-{{ $transaction->type === 'income' ? 'arrow-down' : 'arrow-up' }} {{ $transaction->type === 'income' ? 'text-success' : 'text-danger' }} fa-lg"></i>
+                                <div class="border-3 border-dark rounded-2 d-flex align-items-center justify-content-center {{ $transaction->type === 'income' ? 'bg-green-100' : ($transaction->type === 'expense' ? 'bg-red-100' : 'bg-blue-100') }}" style="width:48px; height:48px; border-radius:12px;">
+                                    <i class="fas fa-{{ $transaction->type === 'income' ? 'arrow-down' : ($transaction->type === 'expense' ? 'arrow-up' : 'exchange-alt') }} {{ $transaction->type === 'income' ? 'text-success' : ($transaction->type === 'expense' ? 'text-danger' : 'text-primary') }} fa-lg"></i>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="fw-black mb-1 text-truncate">{{ $transaction->note ?? ($transaction->category->name ?? 'Transaksi') }}</p>
+                                    <p class="fw-black mb-1 text-truncate">{{ $transaction->note ?? ($transaction->category->name ?? ($transaction->type === 'transfer' ? 'Transfer Saldo' : 'Transaksi')) }}</p>
+                                    @if($transaction->type === 'transfer')
+                                        <p class="text-muted mb-1" style="font-size: 11px;">
+                                            {{ $transaction->account->name }} <i class="fas fa-long-arrow-alt-right mx-1"></i> {{ $transaction->destinationAccount->name }}
+                                        </p>
+                                    @endif
                                     <div class="d-flex align-items-center gap-2">
                                         <span class="neo-badge {{ $transaction->type === 'income' ? 'neo-badge-success' : ($transaction->type === 'expense' ? 'neo-badge-danger' : 'neo-badge-primary') }}">
                                             <i class="fas fa-{{ $transaction->type === 'income' ? 'arrow-down' : ($transaction->type === 'expense' ? 'arrow-up' : 'exchange-alt') }}"></i> {{ $transaction->type === 'income' ? 'Pemasukan' : ($transaction->type === 'expense' ? 'Pengeluaran' : 'Transfer') }}
@@ -110,8 +115,8 @@
                                 </div>
                             </div>
                             <div class="text-end flex-shrink-0">
-                                <p class="fw-black mb-0 {{ $transaction->type === 'income' ? 'text-success' : 'text-danger' }}">
-                                    {{ $transaction->type === 'income' ? '+' : '-' }}Rp{{ number_format($transaction->amount, 0, ',', '.') }}
+                                <p class="fw-black mb-0 {{ $transaction->type === 'income' ? 'text-success' : ($transaction->type === 'expense' ? 'text-danger' : 'text-primary') }}">
+                                    {{ $transaction->type === 'income' ? '+' : ($transaction->type === 'expense' ? '-' : '') }}Rp{{ number_format($transaction->amount, 0, ',', '.') }}
                                 </p>
                             </div>
                         </div>

@@ -19,8 +19,10 @@ class TransactionController extends Controller
 
         // Filtering
         if ($request->has('account_id') && $request->account_id != '') {
-            $query->where('account_id', $request->account_id)
+            $query->where(function($q) use ($request) {
+                $q->where('account_id', $request->account_id)
                   ->orWhere('to_account_id', $request->account_id);
+            });
         }
 
         if ($request->has('type') && $request->type != '') {

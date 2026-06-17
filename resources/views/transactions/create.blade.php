@@ -110,40 +110,50 @@
 
 @push('scripts')
 <script>
-    $(document).ready(function() {
+    document.addEventListener('DOMContentLoaded', function() {
+        const typeRadios = document.querySelectorAll('input[name="type"]');
+        const categoryField = document.getElementById('category_field');
+        const categorySelect = document.getElementById('category_id');
+        const toAccountField = document.getElementById('to_account_field');
+        const toAccountSelect = document.getElementById('to_account_id');
+        const accountLabel = document.getElementById('account_label');
+
         function toggleFields() {
-            const type = $('input[name="type"]:checked').val();
+            const selectedType = document.querySelector('input[name="type"]:checked').value;
             
-            if (type === 'transfer') {
-                $('#category_field').hide();
-                $('#category_id').prop('required', false);
-                $('#to_account_field').show();
-                $('#to_account_id').prop('required', true);
-                $('#account_label').text('Dari Akun');
+            if (selectedType === 'transfer') {
+                categoryField.style.display = 'none';
+                categorySelect.required = false;
+                toAccountField.style.display = 'block';
+                toAccountSelect.required = true;
+                accountLabel.textContent = 'Dari Akun';
             } else {
-                $('#to_account_field').hide();
-                $('#to_account_id').prop('required', false);
-                $('#category_field').show();
-                $('#category_id').prop('required', true);
-                $('#account_label').text(type === 'income' ? 'Masuk ke Akun' : 'Sumber Dana');
+                toAccountField.style.display = 'none';
+                toAccountSelect.required = false;
+                categoryField.style.display = 'block';
+                categorySelect.required = true;
+                accountLabel.textContent = selectedType === 'income' ? 'Masuk ke Akun' : 'Sumber Dana';
 
                 // Filter categories based on type
-                $('#category_id option').each(function() {
-                    const catType = $(this).data('type');
-                    if (!catType || catType === type) {
-                        $(this).show();
+                Array.from(categorySelect.options).forEach(option => {
+                    const catType = option.getAttribute('data-type');
+                    if (!catType || catType === selectedType) {
+                        option.style.display = '';
                     } else {
-                        $(this).hide();
+                        option.style.display = 'none';
                     }
                 });
                 
-                if ($('#category_id option:selected').is(':hidden')) {
-                    $('#category_id').val('');
+                if (categorySelect.selectedOptions[0] && categorySelect.selectedOptions[0].style.display === 'none') {
+                    categorySelect.value = '';
                 }
             }
         }
 
-        $('input[name="type"]').on('change', toggleFields);
+        typeRadios.forEach(radio => {
+            radio.addEventListener('change', toggleFields);
+        });
+
         toggleFields(); // Initial call
     });
 </script>

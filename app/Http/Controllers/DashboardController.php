@@ -73,7 +73,7 @@ class DashboardController extends Controller
 
         // Recent Transactions
         $recentTransactions = $user->transactions()
-            ->with(['account', 'category'])
+            ->with(['account', 'category', 'destinationAccount'])
             ->latest('date')
             ->latest('id')
             ->take(5)

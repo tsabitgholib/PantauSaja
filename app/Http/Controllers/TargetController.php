@@ -14,7 +14,8 @@ class TargetController extends Controller
     public function index()
     {
         $targets = Auth::user()->targets()->latest()->get();
-        return view('targets.index', compact('targets'));
+        $accounts = Auth::user()->accounts;
+        return view('targets.index', compact('targets', 'accounts'));
     }
 
     /**
@@ -42,8 +43,13 @@ class TargetController extends Controller
         $this->authorizeOwner($target);
 
         if ($request->has('add_amount')) {
+            $request->validate([
+                'add_amount' => 'required|numeric|min:1',
+            ]);
+
             $target->current_amount += $request->add_amount;
             $target->save();
+
             return redirect()->back()->with('success', 'Progress berhasil diperbarui.');
         }
 
