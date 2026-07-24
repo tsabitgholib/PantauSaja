@@ -38,21 +38,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/web-artisan/migrate', [\App\Http\Controllers\ArtisanController::class, 'migrate']);
 Route::get('/web-artisan/seed', [\App\Http\Controllers\ArtisanController::class, 'seed']);
 
-// Quick API Migrate (Simple)
-Route::get('/api/migrate', function () {
-    try {
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Migration completed',
-            'output' => \Illuminate\Support\Facades\Artisan::output()
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => $e->getMessage()
-        ], 500);
-    }
-});
-
 require __DIR__.'/auth.php';

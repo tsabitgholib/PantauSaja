@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 
@@ -17,37 +16,40 @@ class BackupController extends Controller
             return Response::download($path, "backup_PantauSaja_" . date('Y-m-d_H-i-s') . ".sqlite");
         }
 
+        $pdo = DB::connection()->getPdo();
         $tables = DB::select('SHOW TABLES');
         $databaseName = config('database.connections.mysql.database');
         $property = "Tables_in_{$databaseName}";
 
         $output = "-- PantauSaja Database Backup\n";
-        $output .= "-- Date: " . date('Y-m-d H:i:s') . "\n\n";
+        $output .= "-- Date: " . date('Y-m-d H:i:s') . "\n";
+        $output .= "SET NAMES utf8mb4;\n";
+        $output .= "SET FOREIGN_KEY_CHECKS = 0;\n\n";
 
         foreach ($tables as $table) {
             $tableName = $table->$property;
-            
-            // Structure
+
             $createTable = DB::select("SHOW CREATE TABLE `{$tableName}`")[0];
             $output .= "DROP TABLE IF EXISTS `{$tableName}`;\n";
             $output .= $createTable->{'Create Table'} . ";\n\n";
 
-            // Data
             $rows = DB::table($tableName)->get();
             foreach ($rows as $row) {
                 $row = (array)$row;
                 $keys = array_keys($row);
                 $values = array_values($row);
-                
-                $escapedValues = array_map(function($value) {
+
+                $escapedValues = array_map(function($value) use ($pdo) {
                     if (is_null($value)) return "NULL";
-                    return "'" . addslashes($value) . "'";
+                    return $pdo->quote((string) $value);
                 }, $values);
 
                 $output .= "INSERT INTO `{$tableName}` (`" . implode("`, `", $keys) . "`) VALUES (" . implode(", ", $escapedValues) . ");\n";
             }
             $output .= "\n\n";
         }
+
+        $output .= "SET FOREIGN_KEY_CHECKS = 1;\n";
 
         $filename = "backup_PantauSaja_" . date('Y-m-d_H-i-s') . ".sql";
 

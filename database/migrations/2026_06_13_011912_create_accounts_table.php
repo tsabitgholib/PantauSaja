@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('accounts', function (Blueprint $バランス) {
-            $バランス->id();
-            $バランス->foreignId('user_id')->constrained()->onDelete('cascade');
-            $バランス->string('name');
-            $バランス->string('type'); // Bank, Wallet, Cash, etc.
-            $バランス->decimal('balance', 15, 2)->default(0);
-            $バランス->string('color')->nullable();
-            $バランス->timestamps();
+        Schema::create('accounts', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('name');
+            $table->string('type');
+            $table->decimal('balance', 15, 2)->default(0);
+            $table->string('color')->nullable();
+            $table->timestamps();
         });
     }
 

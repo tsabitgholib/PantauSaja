@@ -28,7 +28,7 @@ class SubscriptionController extends Controller
             'billing_date' => 'required|integer|min:1|max:31',
         ]);
 
-        Auth::user()->subscriptions()->create($request->all());
+        Auth::user()->subscriptions()->create($request->only(['name', 'amount', 'billing_date']));
 
         return redirect()->route('subscriptions.index')->with('success', 'Langganan berhasil ditambahkan.');
     }
@@ -52,7 +52,7 @@ class SubscriptionController extends Controller
             'billing_date' => 'required|integer|min:1|max:31',
         ]);
 
-        $subscription->update($request->all());
+        $subscription->update($request->only(['name', 'amount', 'billing_date']));
 
         return redirect()->route('subscriptions.index')->with('success', 'Langganan berhasil diperbarui.');
     }

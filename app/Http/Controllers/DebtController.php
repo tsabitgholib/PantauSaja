@@ -33,7 +33,7 @@ class DebtController extends Controller
             'due_date' => 'nullable|date',
         ]);
 
-        $debt = Auth::user()->debts()->create($request->all());
+        $debt = Auth::user()->debts()->create($request->only(['person_name', 'amount', 'type', 'due_date']));
 
         // Create transaction to affect balance
         $transactionType = ($request->type === 'debt') ? 'income' : 'expense';
@@ -92,7 +92,7 @@ class DebtController extends Controller
             'due_date' => 'nullable|date',
         ]);
 
-        $debt->update($request->all());
+        $debt->update($request->only(['person_name', 'amount', 'due_date']));
 
         return redirect()->route('debts.index')->with('success', 'Catatan berhasil diperbarui.');
     }

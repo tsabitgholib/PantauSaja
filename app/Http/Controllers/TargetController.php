@@ -30,7 +30,7 @@ class TargetController extends Controller
             'target_date' => 'nullable|date',
         ]);
 
-        Auth::user()->targets()->create($request->all());
+        Auth::user()->targets()->create($request->only(['name', 'target_amount', 'current_amount', 'target_date']));
 
         return redirect()->route('targets.index')->with('success', 'Target berhasil dibuat.');
     }
@@ -60,7 +60,7 @@ class TargetController extends Controller
             'target_date' => 'nullable|date',
         ]);
 
-        $target->update($request->all());
+        $target->update($request->only(['name', 'target_amount', 'current_amount', 'target_date']));
 
         return redirect()->route('targets.index')->with('success', 'Target berhasil diperbarui.');
     }
